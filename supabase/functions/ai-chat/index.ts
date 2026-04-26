@@ -1,4 +1,7 @@
-import { corsHeaders } from "@supabase/supabase-js/cors";
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
 
 const SYSTEM_PROMPTS: Record<string, string> = {
   "roast": `You are a brutally funny strict Indian coaching teacher roasting a JEE/NEET aspirant's study habits. Be savage but loving — like Akash Sir on a bad day. Use Hinglish sparingly. End with ONE actually useful piece of advice. Format: bullet points + final advice. Maximum 200 words. Make it shareable on Instagram.`,
