@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Flame, Loader2, Share2, Download, Skull, Heart, Drama } from "lucide-react";
+import { Flame, Loader2, Share2, Download, Skull, Heart, Drama, MessageCircle, Instagram } from "lucide-react";
 import { toast } from "sonner";
 import ReactMarkdown from "react-markdown";
 import { toPng } from "html-to-image";
@@ -42,18 +42,53 @@ export default function StudyRoast() {
     } finally { setLoading(false); }
   };
 
+  const buildPng = async () => {
+    if (!cardRef.current) return null;
+    return await toPng(cardRef.current, { cacheBust: true, pixelRatio: 2, backgroundColor: "#0a0a14" });
+  };
+
   const exportImage = async () => {
-    if (!cardRef.current) return;
     try {
-      const dataUrl = await toPng(cardRef.current, { cacheBust: true, pixelRatio: 2, backgroundColor: "#0a0a14" });
+      const dataUrl = await buildPng();
+      if (!dataUrl) return;
       const link = document.createElement("a");
       link.download = `gravitas-roast-${Date.now()}.png`;
       link.href = dataUrl;
       link.click();
       toast.success("Saved! Now post it on Instagram 🔥");
-    } catch {
-      toast.error("Export failed");
-    }
+    } catch { toast.error("Export failed"); }
+  };
+
+  const shareWhatsApp = async () => {
+    try {
+      const dataUrl = await buildPng();
+      if (!dataUrl) return;
+      const blob = await (await fetch(dataUrl)).blob();
+      const file = new File([blob], "gravitas-roast.png", { type: "image/png" });
+      const text = `Just got roasted by GRAVITAS 🔥\n\n"${roast.slice(0, 140)}..."\n\nTry it: gravitas.app`;
+      if (navigator.canShare?.({ files: [file] })) {
+        await navigator.share({ files: [file], text, title: "GRAVITAS Roast" });
+      } else {
+        window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
+        await exportImage();
+        toast.info("Image saved — attach it in WhatsApp");
+      }
+    } catch { toast.error("Share failed"); }
+  };
+
+  const shareInstagram = async () => {
+    try {
+      const dataUrl = await buildPng();
+      if (!dataUrl) return;
+      const blob = await (await fetch(dataUrl)).blob();
+      const file = new File([blob], "gravitas-roast.png", { type: "image/png" });
+      if (navigator.canShare?.({ files: [file] })) {
+        await navigator.share({ files: [file], title: "GRAVITAS Roast" });
+      } else {
+        await exportImage();
+        toast.info("Image saved! Open Instagram → Story → upload from gallery 📸");
+      }
+    } catch { toast.error("Share failed"); }
   };
 
   return (
