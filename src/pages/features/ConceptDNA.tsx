@@ -341,7 +341,7 @@ export default function ConceptDNA() {
                       onClick={() => submitAnswer(i)}
                       className={`p-3 rounded-lg border text-left text-sm transition ${
                         answer === null ? "border-border hover:border-primary/50 bg-card/40" :
-                        i === currentQ.correct ? "border-emerald-500 bg-emerald-500/10" :
+                        i === currentQ.correct ? "border-orbit-blue bg-orbit-blue/10" :
                         i === answer ? "border-destructive bg-destructive/10" : "border-border opacity-60"
                       }`}>
                       {o}
@@ -379,7 +379,7 @@ export default function ConceptDNA() {
             <p className="font-mono text-[10px] tracking-widest text-muted-foreground mb-2">// RECENT TESTS</p>
             <div className="flex flex-wrap gap-2">
               {history.map((h, i) => (
-                <span key={i} className={`px-2.5 py-1 rounded-full text-xs border ${h.correct ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400" : "border-destructive/40 bg-destructive/10 text-destructive"}`}>
+                <span key={i} className={`px-2.5 py-1 rounded-full text-xs border ${h.correct ? "border-orbit-blue/40 bg-orbit-blue/10 text-orbit-blue" : "border-destructive/40 bg-destructive/10 text-destructive"}`}>
                   {h.correct ? "✓" : "✗"} {h.chapter}
                 </span>
               ))}
