@@ -149,8 +149,14 @@ export default function StudyRoast() {
               </div>
             </div>
             <div className="flex gap-2 mt-4 flex-wrap">
-              <Button variant="outline" size="sm" onClick={exportImage}>
-                <Download className="h-3 w-3 mr-1" />Download as image
+              <Button size="sm" onClick={exportImage} className="bg-gradient-to-r from-orbit-purple to-orbit-blue">
+                <Download className="h-3 w-3 mr-1" />Save PNG card
+              </Button>
+              <Button size="sm" onClick={shareWhatsApp} className="bg-[#25D366] hover:bg-[#20bd5a] text-white">
+                <MessageCircle className="h-3 w-3 mr-1" />WhatsApp
+              </Button>
+              <Button size="sm" onClick={shareInstagram} className="bg-gradient-to-r from-[#feda75] via-[#d62976] to-[#4f5bd5] text-white">
+                <Instagram className="h-3 w-3 mr-1" />Instagram Story
               </Button>
               <Button variant="outline" size="sm" onClick={() => { navigator.clipboard.writeText(roast); toast.success("Copied"); }}>
                 <Share2 className="h-3 w-3 mr-1" />Copy text
