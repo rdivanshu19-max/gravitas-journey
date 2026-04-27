@@ -14,6 +14,111 @@ export type Database = {
   }
   public: {
     Tables: {
+      brain_fingerprints: {
+        Row: {
+          created_at: string
+          id: string
+          notes: string | null
+          profile_type: string
+          scores: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          notes?: string | null
+          profile_type: string
+          scores?: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          notes?: string | null
+          profile_type?: string
+          scores?: Json
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      confession_likes: {
+        Row: {
+          confession_id: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          confession_id: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          confession_id?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "confession_likes_confession_id_fkey"
+            columns: ["confession_id"]
+            isOneToOne: false
+            referencedRelation: "confessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "confession_likes_confession_id_fkey"
+            columns: ["confession_id"]
+            isOneToOne: false
+            referencedRelation: "confessions_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      confession_replies: {
+        Row: {
+          confession_id: string
+          content: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          confession_id: string
+          content: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          confession_id?: string
+          content?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "confession_replies_confession_id_fkey"
+            columns: ["confession_id"]
+            isOneToOne: false
+            referencedRelation: "confessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "confession_replies_confession_id_fkey"
+            columns: ["confession_id"]
+            isOneToOne: false
+            referencedRelation: "confessions_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       confessions: {
         Row: {
           content: string
@@ -35,21 +140,6 @@ export type Database = {
           id?: string
           user_id?: string
           votes?: number
-        }
-        Relationships: []
-      }
-      deleted_emails: {
-        Row: {
-          deleted_at: string
-          email: string
-        }
-        Insert: {
-          deleted_at?: string
-          email: string
-        }
-        Update: {
-          deleted_at?: string
-          email?: string
         }
         Relationships: []
       }
@@ -292,23 +382,65 @@ export type Database = {
       }
     }
     Views: {
+      confession_replies_public: {
+        Row: {
+          confession_id: string | null
+          content: string | null
+          created_at: string | null
+          id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          confession_id?: string | null
+          content?: string | null
+          created_at?: string | null
+          id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          confession_id?: string | null
+          content?: string | null
+          created_at?: string | null
+          id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "confession_replies_confession_id_fkey"
+            columns: ["confession_id"]
+            isOneToOne: false
+            referencedRelation: "confessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "confession_replies_confession_id_fkey"
+            columns: ["confession_id"]
+            isOneToOne: false
+            referencedRelation: "confessions_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       confessions_public: {
         Row: {
           content: string | null
           created_at: string | null
           id: string | null
+          user_id: string | null
           votes: number | null
         }
         Insert: {
           content?: string | null
           created_at?: string | null
           id?: string | null
+          user_id?: string | null
           votes?: number | null
         }
         Update: {
           content?: string | null
           created_at?: string | null
           id?: string | null
+          user_id?: string | null
           votes?: number | null
         }
         Relationships: []
