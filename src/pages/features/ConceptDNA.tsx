@@ -350,8 +350,8 @@ export default function ConceptDNA() {
                 </div>
                 <AnimatePresence>
                   {right && (
-                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mb-4 p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/40 flex gap-2 items-center text-sm">
-                      <Check className="h-4 w-4 text-emerald-500" />Strand intact. Connected topics safe.
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mb-4 p-3 rounded-lg bg-orbit-blue/10 border border-orbit-blue/40 flex gap-2 items-center text-sm">
+                      <Check className="h-4 w-4 text-orbit-blue" />Strand intact. Connected topics safe.
                     </motion.div>
                   )}
                   {wrong && (
