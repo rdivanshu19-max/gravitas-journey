@@ -139,7 +139,7 @@ export default function StudyRoast() {
                   <p className="font-mono text-[10px] tracking-[0.3em] text-orbit-orange">// GRAVITAS ROAST</p>
                   <p className="font-display text-xs text-muted-foreground">{persona.label}</p>
                 </div>
-                <div className="prose prose-invert prose-sm max-w-none text-foreground">
+                <div className="prose prose-invert prose-sm max-w-none text-white [&_p]:text-white/95 [&_strong]:text-orbit-orange [&_li]:text-white/90">
                   <ReactMarkdown>{roast}</ReactMarkdown>
                 </div>
                 <div className="mt-6 pt-4 border-t border-destructive/20 flex items-center justify-between">
