@@ -88,25 +88,24 @@ export default function RankPredictor() {
 
         {result && (
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-            <Card className="p-8 relative overflow-hidden border-orbit-purple/40" style={{
-              background: "linear-gradient(135deg, hsl(230 35% 4%) 0%, hsl(280 40% 8%) 50%, hsl(222 50% 8%) 100%)",
-            }}>
-              <div className="absolute -top-20 -right-20 h-60 w-60 rounded-full opacity-30" style={{ background: "radial-gradient(circle, hsl(var(--orbit-purple)), transparent)" }} />
-              <div className="absolute -bottom-20 -left-20 h-60 w-60 rounded-full opacity-20" style={{ background: "radial-gradient(circle, hsl(var(--orbit-blue)), transparent)" }} />
+            <Card className="p-8 relative overflow-hidden border-orbit-purple/40 bg-card">
+              <div className="absolute inset-0 opacity-60" style={{
+                background: "radial-gradient(ellipse at top right, hsl(var(--orbit-purple)/0.18), transparent 60%), radial-gradient(ellipse at bottom left, hsl(var(--orbit-blue)/0.15), transparent 60%)",
+              }} />
               <div className="relative">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-orbit-purple to-orbit-blue grid place-items-center">
+                  <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-orbit-purple to-orbit-blue grid place-items-center shadow-lg">
                     <Trophy className="h-6 w-6 text-primary-foreground" />
                   </div>
                   <div>
                     <p className="font-mono text-[10px] tracking-[0.3em] text-orbit-orange">PREDICTION COMPLETE</p>
-                    <p className="font-display text-lg">Your rank trajectory</p>
+                    <p className="font-display text-lg text-foreground">Your rank trajectory</p>
                   </div>
                 </div>
-                <div className="prose prose-invert prose-sm max-w-none
+                <div className="prose prose-sm dark:prose-invert max-w-none
                   prose-headings:font-display prose-headings:orbit-text
                   prose-strong:text-orbit-orange
-                  prose-li:text-foreground/90">
+                  prose-p:text-foreground/90 prose-li:text-foreground/90">
                   <ReactMarkdown>{result}</ReactMarkdown>
                 </div>
                 <div className="mt-6 pt-4 border-t border-orbit-purple/20 flex items-center justify-between">
