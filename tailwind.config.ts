@@ -8,7 +8,7 @@ export default {
     container: { center: true, padding: "1.5rem", screens: { "2xl": "1400px" } },
     extend: {
       fontFamily: {
-        display: ["Orbitron", "system-ui", "sans-serif"],
+        display: ["'Instrument Serif'", "ui-serif", "Georgia", "serif"],
         body: ["Space Grotesk", "system-ui", "sans-serif"],
         mono: ["JetBrains Mono", "monospace"],
       },
