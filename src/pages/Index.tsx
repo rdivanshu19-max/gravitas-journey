@@ -1,162 +1,191 @@
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
-import AppHeader from "@/components/AppHeader";
-import OrbitalLogo from "@/components/OrbitalLogo";
-import StarField from "@/components/StarField";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import {
-  Dna, Skull, Activity, Brain, Heart, MessageSquareWarning, Flame,
-  TrendingUp, HeartPulse, Map, Lock, EyeOff, Trophy, Mic, Clock, Ghost
-} from "lucide-react";
+import { useEffect, useRef, useState, FormEvent } from "react";
+import { ArrowRight, Globe, Instagram, Twitter } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 
-const features = [
-  { icon: Dna, title: "Concept DNA", desc: "Every JEE/NEET concept mapped as a DNA strand. See which weak topics drag down 7 others." , color: "text-orbit-blue" },
-  { icon: Clock, title: "Last 24 Hours Mode", desc: "Emergency war-room revision plan based on your entire test history. Maximum marks, minimum time.", color: "text-orbit-orange" },
-  { icon: Activity, title: "Silence Score", desc: "Detects every distraction. Daily focus score. Leaderboard among friends. Peer pressure that works.", color: "text-orbit-purple" },
-  { icon: Skull, title: "Wrong Answer Graveyard", desc: "Wrong questions get buried. They return as ghosts in 7 days. Defeat them. Gamified spaced repetition.", color: "text-destructive" },
-  { icon: Brain, title: "Brain Fingerprint", desc: "10-min test that reveals HOW you think — visual, pattern, formula or logic. Get your personal study method.", color: "text-orbit-blue" },
-  { icon: Mic, title: "Time Capsule", desc: "Record a message to your future self on Day 1. Auto-delivered on JEE day. Track your whole journey.", color: "text-orbit-orange" },
-  { icon: Flame, title: "Study Roast", desc: "AI roasts your schedule like a brutally funny strict teacher. Brutally honest. Insanely shareable.", color: "text-destructive" },
-  { icon: TrendingUp, title: "JEE Rank Predictor 2.0", desc: "Inputs your mocks → predicts rank range with confidence + tells you what 3 fixes unlock the next tier.", color: "text-orbit-purple" },
-  { icon: Heart, title: "Exam Anxiety Coach", desc: "AI therapist for exam stress. Detects panic. Breathing drills. Real motivation grounded in your data.", color: "text-orbit-blue" },
-  { icon: Ghost, title: "Mistake DNA Profiling", desc: "Not 'weak topics' — a cognitive error fingerprint. Conceptual? Calculation? Misreading? We map it.", color: "text-orbit-orange" },
-  { icon: HeartPulse, title: "Heartbeat Countdown", desc: "Days to exam shown as a living pulse. Faster as it nears. Visceral urgency, no words needed.", color: "text-destructive" },
-  { icon: Map, title: "Syllabus as RPG Map", desc: "The whole syllabus as a world. Mastered chapters glow. Weak ones burn. You're the character.", color: "text-orbit-purple" },
-  { icon: MessageSquareWarning, title: "Confession Box", desc: "Anonymous space for your darkest prep truths. Top confessions go on the live wall. Solidarity.", color: "text-orbit-blue" },
-  { icon: EyeOff, title: "Silent Competition", desc: "No names. No profiles. Just: 'You're ahead of 68% today.' Drive without toxicity.", color: "text-orbit-orange" },
-  { icon: Lock, title: "The Obituary", desc: "Quit? Get a one-page obituary of your prep journey. Most students never close that tab.", color: "text-destructive" },
-  { icon: Trophy, title: "Always Improving", desc: "Every interaction trains your personal model. Gravitas only gets sharper.", color: "text-orbit-purple" },
-];
+const VIDEO_URL =
+  "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260328_115001_bcdaa3b4-03de-47e7-ad63-ae3e392c32d4.mp4";
+
+const FADE_MS = 500;
+const FADE_OUT_TRIGGER = 0.55; // seconds before end
 
 export default function Index() {
+  const { user } = useAuth();
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const rafRef = useRef<number | null>(null);
+  const fadingOutRef = useRef(false);
+  const [email, setEmail] = useState("");
+
+  const cancelRaf = () => {
+    if (rafRef.current !== null) {
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
+    }
+  };
+
+  const animateOpacity = (target: number, onDone?: () => void) => {
+    const el = videoRef.current;
+    if (!el) return;
+    cancelRaf();
+    const start = performance.now();
+    const from = parseFloat(el.style.opacity || "0") || 0;
+    const tick = (now: number) => {
+      const t = Math.min(1, (now - start) / FADE_MS);
+      const v = from + (target - from) * t;
+      el.style.opacity = String(v);
+      if (t < 1) {
+        rafRef.current = requestAnimationFrame(tick);
+      } else {
+        rafRef.current = null;
+        onDone?.();
+      }
+    };
+    rafRef.current = requestAnimationFrame(tick);
+  };
+
+  useEffect(() => {
+    const el = videoRef.current;
+    if (!el) return;
+    el.style.opacity = "0";
+
+    const handleLoaded = () => {
+      fadingOutRef.current = false;
+      animateOpacity(1);
+    };
+    const handleTimeUpdate = () => {
+      if (fadingOutRef.current) return;
+      const remaining = el.duration - el.currentTime;
+      if (isFinite(remaining) && remaining <= FADE_OUT_TRIGGER) {
+        fadingOutRef.current = true;
+        animateOpacity(0);
+      }
+    };
+    const handleEnded = () => {
+      el.style.opacity = "0";
+      window.setTimeout(() => {
+        el.currentTime = 0;
+        fadingOutRef.current = false;
+        el.play().catch(() => {});
+        animateOpacity(1);
+      }, 100);
+    };
+
+    el.addEventListener("loadeddata", handleLoaded);
+    el.addEventListener("timeupdate", handleTimeUpdate);
+    el.addEventListener("ended", handleEnded);
+    el.play().catch(() => {});
+
+    return () => {
+      cancelRaf();
+      el.removeEventListener("loadeddata", handleLoaded);
+      el.removeEventListener("timeupdate", handleTimeUpdate);
+      el.removeEventListener("ended", handleEnded);
+    };
+  }, []);
+
+  const onSubscribe = (e: FormEvent) => {
+    e.preventDefault();
+    // intentionally minimal — routes to auth with prefilled intent
+    window.location.href = `/auth?email=${encodeURIComponent(email)}`;
+  };
+
   return (
-    <div className="min-h-screen relative overflow-hidden">
-      <AppHeader />
+    <div className="relative min-h-screen bg-black overflow-hidden flex flex-col">
+      {/* Background video */}
+      <video
+        ref={videoRef}
+        className="absolute inset-0 w-full h-full object-cover translate-y-[17%] pointer-events-none"
+        src={VIDEO_URL}
+        muted
+        playsInline
+        autoPlay
+        preload="auto"
+        style={{ opacity: 0 }}
+      />
+      {/* subtle vignette for legibility */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/20 to-black/80 pointer-events-none" />
 
-      {/* HERO */}
-      <section className="relative min-h-[88vh] flex items-center">
-        <div className="absolute inset-0"><StarField /></div>
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/30 to-background pointer-events-none" />
-        <div className="container relative grid md:grid-cols-2 gap-12 items-center py-16">
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
-            <p className="font-mono text-xs tracking-[0.3em] text-orbit-orange mb-4">FOCUS · ANALYZE · IMPROVE · RISE</p>
-            <h1 className="font-display font-black text-5xl md:text-7xl leading-[0.95] mb-6">
-              <span className="orbit-text">GRAVITAS</span>
-            </h1>
-            <p className="text-lg md:text-xl text-foreground/80 mb-3 max-w-xl">
-              The space between where you are and where you need to be.
-            </p>
-            <p className="text-muted-foreground mb-8 max-w-xl">
-              A next-generation JEE & NEET preparation OS. We don't just track scores — we map how you think,
-              where you fail, how you focus, and how you improve.
-            </p>
-            <div className="flex flex-wrap gap-3">
-              <Button size="lg" asChild className="bg-gradient-to-r from-orbit-orange to-destructive text-primary-foreground shadow-[var(--shadow-fire)] font-semibold">
-                <Link to="/auth">Begin Your Ascent →</Link>
-              </Button>
-              <Button size="lg" variant="outline" asChild>
-                <a href="#features">Explore the System</a>
-              </Button>
+      {/* Nav */}
+      <nav className="relative z-20 pl-6 pr-6 py-6">
+        <div className="liquid-glass rounded-full px-6 py-3 flex items-center justify-between max-w-5xl mx-auto">
+          <div className="flex items-center gap-8">
+            <Link to="/" className="flex items-center gap-2 text-white font-semibold text-lg">
+              <Globe size={24} />
+              <span>GRAVITAS</span>
+            </Link>
+            <div className="hidden md:flex items-center gap-8">
+              <a href="#features" className="text-white/80 hover:text-white transition-colors text-sm font-medium">Features</a>
+              <a href="#ecosystem" className="text-white/80 hover:text-white transition-colors text-sm font-medium">Ecosystem</a>
+              <a href="#about" className="text-white/80 hover:text-white transition-colors text-sm font-medium">About</a>
             </div>
-          </motion.div>
-          <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 1 }} className="flex justify-center">
-            <OrbitalLogo size={360} />
-          </motion.div>
+          </div>
+          <div className="flex items-center gap-4">
+            {user ? (
+              <Link to="/dashboard" className="text-white text-sm font-medium">Dashboard</Link>
+            ) : (
+              <Link to="/auth" className="text-white text-sm font-medium">Sign Up</Link>
+            )}
+            <Link to="/auth" className="liquid-glass rounded-full px-6 py-2 text-white text-sm font-medium">
+              Login
+            </Link>
+          </div>
         </div>
-      </section>
+      </nav>
 
-      {/* MISSION */}
-      <section className="container py-20 relative">
-        <div className="max-w-3xl mx-auto text-center">
-          <p className="font-mono text-xs tracking-[0.3em] text-orbit-blue mb-4">// OUR GOAL</p>
-          <h2 className="font-display text-4xl md:text-5xl mb-6">Preparation, re-engineered.</h2>
-          <p className="text-muted-foreground text-lg leading-relaxed">
-            Traditional platforms give you content, tests and scores. Gravitas combines AI, behavioral analytics
-            and immersive design to understand your <span className="text-foreground">complete cognitive profile</span> — turning
-            passive studying into an intelligent, adaptive experience built for the cruellest exams in the world.
-          </p>
-        </div>
-      </section>
+      {/* Hero */}
+      <main className="relative z-10 flex-1 flex flex-col items-center justify-center px-6 py-12 text-center -translate-y-[10%]">
+        <h1
+          className="text-5xl md:text-6xl lg:text-7xl text-white mb-8 tracking-tight whitespace-nowrap"
+          style={{ fontFamily: "'Instrument Serif', serif" }}
+        >
+          Built for the curious
+        </h1>
 
-      {/* FEATURES GRID */}
-      <section id="features" className="container py-16">
-        <div className="text-center mb-14">
-          <p className="font-mono text-xs tracking-[0.3em] text-orbit-orange mb-3">// THE ARSENAL</p>
-          <h2 className="font-display text-4xl md:text-5xl">16 weapons. One mission.</h2>
-        </div>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {features.map((f, i) => (
-            <motion.div
-              key={f.title}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: i * 0.04 }}
+        <div className="max-w-xl w-full space-y-4">
+          <form onSubmit={onSubscribe} className="liquid-glass rounded-full pl-6 pr-2 py-2 flex items-center gap-3">
+            <input
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter your email"
+              className="flex-1 bg-transparent outline-none border-none text-white placeholder:text-white/40 text-base"
+            />
+            <button
+              type="submit"
+              aria-label="Subscribe"
+              className="bg-white rounded-full p-3 text-black hover:scale-105 transition-transform"
             >
-              <Card className="glass-card p-6 h-full hover:border-primary/40 transition-all duration-300 hover:-translate-y-1 group">
-                <f.icon className={`h-9 w-9 ${f.color} mb-4 group-hover:scale-110 transition-transform`} />
-                <h3 className="font-display text-lg mb-2">{f.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{f.desc}</p>
-              </Card>
-            </motion.div>
-          ))}
-        </div>
-      </section>
+              <ArrowRight size={20} />
+            </button>
+          </form>
 
-      {/* SISTER APPS */}
-      <section className="container py-20">
-        <div className="text-center mb-12">
-          <p className="font-mono text-xs tracking-[0.3em] text-orbit-purple mb-3">// THE ECOSYSTEM</p>
-          <h2 className="font-display text-4xl md:text-5xl">Built alongside</h2>
-          <p className="text-muted-foreground mt-3 max-w-xl mx-auto">Gravitas is part of a wider system for serious aspirants.</p>
-        </div>
-        <div className="grid md:grid-cols-2 gap-6">
-          <Card className="glass-card p-8 hover:border-orbit-blue/50 transition-all">
-            <h3 className="font-display text-2xl mb-2 orbit-text">Rankers Star</h3>
-            <p className="text-sm text-muted-foreground mb-4">
-              All-in-one JEE prep. Free lectures from every coaching, 700+ JEE materials, AI tests, CBT mode,
-              AI mentor and AI doubt — one structured ecosystem instead of 20 tabs.
-            </p>
-            <Button variant="outline" asChild><a href="https://rankers-stars.vercel.app/" target="_blank" rel="noreferrer">Open Rankers Star ↗</a></Button>
-          </Card>
-          <Card className="glass-card p-8 hover:border-orbit-orange/50 transition-all">
-            <h3 className="font-display text-2xl mb-2 orbit-text">Nexus CBT</h3>
-            <p className="text-sm text-muted-foreground mb-4">
-              The CBT engine inside Rankers Star. Real exam-like interface, timed tests, performance analytics,
-              PDF→test converter, flashcards, AI doubt support and a special revision section.
-            </p>
-            <Button variant="outline" asChild><a href="https://nexuscbt.vercel.app/" target="_blank" rel="noreferrer">Open Nexus CBT ↗</a></Button>
-          </Card>
-        </div>
-      </section>
+          <p className="text-white text-sm leading-relaxed px-4">
+            The space between where you are and where you need to be. Map your mind, defeat your mistakes, and rise toward JEE & NEET — guided by AI built for the curious.
+          </p>
 
-      {/* DEVELOPER */}
-      <section className="container py-20 border-t border-border">
-        <div className="max-w-3xl mx-auto glass-card p-8 md:p-12 rounded-2xl">
-          <p className="font-mono text-xs tracking-[0.3em] text-orbit-orange mb-3">// BUILT BY</p>
-          <h3 className="font-display text-3xl mb-4">Divyanshu</h3>
-          <p className="text-foreground/80 mb-4">
-            I design and develop high-impact digital products — not just good-looking websites, but fast, scalable systems that solve real problems.
-          </p>
-          <p className="text-muted-foreground mb-6">
-            From coaching platforms and AI tools to modern UI websites and 3D experiences, everything I build is focused on performance, usability and results.
-          </p>
-          <div className="grid sm:grid-cols-2 gap-2 text-sm text-muted-foreground mb-6">
-            <div>• Full-stack web development</div>
-            <div>• AI-powered tools & automation</div>
-            <div>• 3D animated websites</div>
-            <div>• Complete EdTech platforms</div>
-          </div>
-          <div className="flex flex-wrap gap-3">
-            <Button asChild><a href="https://divyanshuportfolio-beta.vercel.app/" target="_blank" rel="noreferrer">View Portfolio ↗</a></Button>
-            <Button variant="outline" asChild><a href="mailto:studyspacerankers@gmail.com">Work with me</a></Button>
+          <div className="flex justify-center pt-2">
+            <Link
+              to="/auth"
+              className="liquid-glass rounded-full px-8 py-3 text-white text-sm font-medium hover:bg-white/5 transition-colors inline-block"
+            >
+              Read the Manifesto
+            </Link>
           </div>
         </div>
-      </section>
+      </main>
 
-      <footer className="container py-10 text-center text-xs text-muted-foreground border-t border-border">
-        © {new Date().getFullYear()} GRAVITAS · Crafted by Divyanshu · For the dreamers chasing 99 percentile.
+      {/* Social footer */}
+      <footer className="relative z-10 flex justify-center gap-4 pb-12">
+        <a href="#" aria-label="Instagram" className="liquid-glass rounded-full p-4 text-white/80 hover:text-white hover:bg-white/5 transition-all">
+          <Instagram size={20} />
+        </a>
+        <a href="#" aria-label="Twitter" className="liquid-glass rounded-full p-4 text-white/80 hover:text-white hover:bg-white/5 transition-all">
+          <Twitter size={20} />
+        </a>
+        <a href="https://divyanshuportfolio-beta.vercel.app/" target="_blank" rel="noreferrer" aria-label="Website" className="liquid-glass rounded-full p-4 text-white/80 hover:text-white hover:bg-white/5 transition-all">
+          <Globe size={20} />
+        </a>
       </footer>
     </div>
   );
