@@ -83,33 +83,51 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen relative grid place-items-center p-6 overflow-hidden">
+    <div className="min-h-screen relative grid place-items-center p-6 overflow-hidden bg-black text-white">
+      <div
+        className="absolute inset-0 opacity-60 pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(ellipse at 30% 20%, rgba(255,140,60,0.15), transparent 55%), radial-gradient(ellipse at 70% 80%, rgba(80,120,255,0.18), transparent 60%), #000",
+        }}
+      />
       <div className="absolute inset-0"><StarField /></div>
-      <div className="absolute inset-0 bg-gradient-to-b from-background/30 via-transparent to-background pointer-events-none" />
 
       <div className="relative w-full max-w-md">
-        <div className="flex justify-center mb-6"><Link to="/"><OrbitalLogo size={120} /></Link></div>
-        <Card className="glass-card p-8">
-          <h1 className="font-display text-2xl text-center mb-1 orbit-text">GRAVITAS</h1>
-          <p className="text-center text-xs text-muted-foreground tracking-widest mb-6">FOCUS · ANALYZE · IMPROVE · RISE</p>
+        <div className="text-center mb-8">
+          <Link to="/" className="inline-block">
+            <h1 className="text-5xl tracking-tight" style={{ fontFamily: "'Instrument Serif', serif" }}>
+              GRAVITAS
+            </h1>
+          </Link>
+          <p className="text-[10px] text-white/50 tracking-[0.4em] mt-2">FOCUS · ANALYZE · IMPROVE · RISE</p>
+        </div>
+
+        <div className="liquid-glass rounded-3xl p-8">
+          <h2 className="text-3xl text-center mb-1" style={{ fontFamily: "'Instrument Serif', serif" }}>
+            Enter your <em className="italic">orbit</em>
+          </h2>
+          <p className="text-center text-xs text-white/55 mb-6">Sign in or create your account to begin</p>
 
           <Tabs defaultValue="signin">
-            <TabsList className="grid grid-cols-2 w-full mb-6">
-              <TabsTrigger value="signin">Sign in</TabsTrigger>
-              <TabsTrigger value="signup">Create account</TabsTrigger>
+            <TabsList className="grid grid-cols-2 w-full mb-6 bg-white/5 border border-white/10">
+              <TabsTrigger value="signin" className="data-[state=active]:bg-white data-[state=active]:text-black text-white/70">Sign in</TabsTrigger>
+              <TabsTrigger value="signup" className="data-[state=active]:bg-white data-[state=active]:text-black text-white/70">Create account</TabsTrigger>
             </TabsList>
 
             <TabsContent value="signin">
               <form onSubmit={handleSignIn} className="space-y-4">
                 <div>
-                  <Label>Email</Label>
-                  <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+                  <Label className="text-white/80">Email</Label>
+                  <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required
+                    className="bg-white/5 border-white/15 text-white placeholder:text-white/40" />
                 </div>
                 <div>
-                  <Label>Password</Label>
-                  <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+                  <Label className="text-white/80">Password</Label>
+                  <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required
+                    className="bg-white/5 border-white/15 text-white placeholder:text-white/40" />
                 </div>
-                <Button type="submit" className="w-full" disabled={loading}>
+                <Button type="submit" className="w-full bg-white text-black hover:bg-white/90 rounded-full" disabled={loading}>
                   {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Enter Orbit"}
                 </Button>
               </form>
@@ -118,25 +136,30 @@ export default function Auth() {
             <TabsContent value="signup">
               <form onSubmit={handleSignUp} className="space-y-4">
                 <div>
-                  <Label>Name</Label>
-                  <Input value={name} onChange={(e) => setName(e.target.value)} required />
+                  <Label className="text-white/80">Name</Label>
+                  <Input value={name} onChange={(e) => setName(e.target.value)} required
+                    className="bg-white/5 border-white/15 text-white placeholder:text-white/40" />
                 </div>
                 <div>
-                  <Label>Email</Label>
-                  <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+                  <Label className="text-white/80">Email</Label>
+                  <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required
+                    className="bg-white/5 border-white/15 text-white placeholder:text-white/40" />
                 </div>
                 <div>
-                  <Label>Password</Label>
-                  <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+                  <Label className="text-white/80">Password</Label>
+                  <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required
+                    className="bg-white/5 border-white/15 text-white placeholder:text-white/40" />
                 </div>
-                <Button type="submit" className="w-full bg-gradient-to-r from-orbit-orange to-destructive" disabled={loading}>
+                <Button type="submit" className="w-full bg-white text-black hover:bg-white/90 rounded-full" disabled={loading}>
                   {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Begin Ascent"}
                 </Button>
               </form>
             </TabsContent>
           </Tabs>
-        </Card>
-        <p className="text-center text-xs text-muted-foreground mt-6">By continuing you join the next generation of aspirants.</p>
+        </div>
+        <p className="text-center text-xs text-white/45 mt-6">
+          By continuing you join the next generation of aspirants.
+        </p>
       </div>
     </div>
   );
